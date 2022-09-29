@@ -16,7 +16,7 @@ export const authOptions = {
         }
     }),
   ],
-  secret: 'Hixz3Ym3cYuapMTI/dT+0abqNdBEORm47qcXwsxI2Pc=',
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
     maxAge: 60 * 60 * 24 * 30,
@@ -42,30 +42,31 @@ export const authOptions = {
     error: '/auth/signin',
   },
   callbacks: {
-    async signIn(credentials){
-      // console.log('signIn', credentials)
-        if(credentials?.user?.status === 0){
+    async signIn({user, credentials}){
+      console.log('signIn', credentials)
+        if(user?.status === 0){
             return false
         }
+        
         return true
     },
     async redirect({ url, baseUrl }) {
-        // console.log(url, baseUrl)
+        console.log(url, baseUrl)
         // // Allows relative callback URLs
-        // if (url.startsWith("/")) return `${baseUrl}${url}`
+        if (url.startsWith("/")) return `${baseUrl}${url}`
         // // Allows callback URLs on the same origin
-        // else if (new URL(url).origin === baseUrl) return url
+        else if (new URL(url).origin === baseUrl) return url
         return baseUrl
     },
     async jwt({ token, user, account }) {
-        console.log('jwt',token, user, account)
+        // console.log('jwt',token, user, account)
         if(user?.status === 1){
           token = user
         }
         return token
     },
     async session({session, user, token}){
-        console.log('auth session', session, user, token)
+        // console.log('auth session', session, user, token)
         // session.user = window.localStorage.getItem("userInfo")
         session.user = token
         return session

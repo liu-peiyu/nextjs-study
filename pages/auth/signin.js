@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { signIn} from 'next-auth/react'
+import { getSession, signIn} from 'next-auth/react'
 
 import { getCsrfToken } from "next-auth/react"
 
@@ -67,7 +67,36 @@ function Signin(props){
     )
 }
 
+// Signin.getInitialProps  = async(context)=>{
+//     const { req, res } = context
+//     const session = await getSession({req})
+
+//     if(session && res && session.accessToken){
+//         res.writeHead(302, {
+//             Location: "/"
+//         })
+//         req.end()
+//         return
+//     }
+
+//     return {
+//         session: undefined,
+//     }
+// }
+
 export async function getServerSideProps(context){
+
+    const { req, res } = context
+    const session = await getSession({req})
+    console.log('getServerSideProps', res, session)
+
+    if(session && res){
+        res.writeHead(302, {
+            Location: "/user"
+        })
+        res.end()
+    }
+
     return {
         props: {
             csrfToken: await getCsrfToken(context)
